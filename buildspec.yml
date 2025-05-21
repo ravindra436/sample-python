@@ -1,0 +1,43 @@
+version: 0.2
+
+env:
+  variables:
+    # Define your ECR repository URI
+    ECR_REPO_URI: "your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/flask-mysql-app"
+    IMAGE_TAG: "latest"
+
+phases:
+  install:
+    # Install dependencies like Docker and AWS CLI
+    commands:
+      - echo Installing dependencies...
+      - apt-get update
+      - apt-get install -y python3-pip
+      - pip3 install --upgrade awscli
+      - curl -sSL https://get.docker.com/ | sh
+      - service docker start
+      - echo Docker and AWS CLI installed successfully.
+
+  pre_build:
+    commands:
+      - echo Logging into Amazon ECR...
+      - $(aws ecr get-login --no-include-email --region us-east-1)
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t flask-mysql-app .
+
+  build:
+    commands:
+      - echo Tagging the Docker image...
+      - docker tag flask-mysql-app:latest $ECR_REPO_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Pushing the Docker image to ECR...
+      - docker push $ECR_REPO_URI:$IMAGE_TAG
+      - echo Docker image pushed successfully to ECR.
+
+artifacts:
+  files:
+    - "**/*"
+  discard-paths: yes

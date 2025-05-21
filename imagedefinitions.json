@@ -1,6 +1,6 @@
 [
   {
     "name": "python-smaple-app",
-    "imageUri": "897930981390.dkr.ecr.us-east-1.amazonaws.com/cicd-demo:latest"
+    "imageUri": "897930981390.dkr.ecr.us-east-1.amazonaws.com/python-smaple-app:latest"
   }
 ]
